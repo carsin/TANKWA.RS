@@ -19,3 +19,11 @@
 2. Explosives
 3. Gun projectile)
 
+## How to Build
+### On macOS:
+> Note: May work on Windows (WSL?) *testing needed*
+```shell
+git clone https://github.com/carsin/MINERKILLERGAME
+cd MINERKILLERGAME
+make && ./run
+```
