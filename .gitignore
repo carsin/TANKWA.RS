@@ -1,2 +1,2 @@
-.ccls-cache/
-run
+/target
+Cargo.lock
