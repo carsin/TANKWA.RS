@@ -23,7 +23,6 @@ impl Game {
 
     pub fn update(&mut self) {
         let mut last_shot = get_time();
-        let frame_t = get_time();
 
         // move player
         if is_key_down(KeyCode::W) {
@@ -38,16 +37,16 @@ impl Game {
             self.player.vel.x += 0.5;
         }
 
+        let frame_t = get_time();
+
         // shoot bullet on click
         if is_mouse_button_down(MouseButton::Left) {
             let mouse_pos = mouse_position();
-            let weiupahasduifgh = mouse_pos.0 / mouse_pos.1;
-            let direction = weiupahasduifgh.atan();
-            let rotation = direction.to_radians();
-            let rot_vec = Vec2::new(rotation.sin(), -rotation.cos());
+            let direction = (vec2(mouse_pos.0, mouse_pos.1) - self.player.pos).normalize();
+            // let rot_vec = Vec2::new(rotation.sin(), -rotation.cos());
             self.bullets.push(Bullet {
-                pos: self.player.pos + rot_vec,
-                vel: rot_vec * 7.,
+                pos: ((self.player.pos) + direction),
+                vel: 7. * direction,
                 shot_at: frame_t,
                 collided: false,
             });

@@ -30,6 +30,7 @@ impl Player {
     }
 
     pub fn render(self) {
-        draw_rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, BLACK);
+        draw_rectangle(self.pos.x - self.size.x / 2., self.pos.y - self.size.y / 2., self.size.x, self.size.y, BLACK);
+        draw_rectangle(self.pos.x - 1., self.pos.y - 1., 2., 2., RED);
     }
 }
