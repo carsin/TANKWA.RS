@@ -33,7 +33,7 @@ impl Game {
             self.bullets.push(Bullet {
                 dir: direction,
                 pos: ((self.player.pos) + direction),
-                vel: 7. * direction,
+                vel: 10. * direction,
                 shot_at: frame_t,
                 collided: false,
             });
@@ -58,7 +58,7 @@ impl Game {
             let pos1 = bullet.pos - bullet.vel;
             let pos2 = bullet.pos - bullet.vel * 2.;
             draw_line(pos1.x, pos1.y, pos2.x, pos2.y, 1., YELLOW);
-            draw_circle(bullet.pos.x, bullet.pos.y, 1., RED)
+            // draw_circle(bullet.pos.x, bullet.pos.y, 1., RED)
         }
         // player
         self.player.render();

@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 
-const PLAYER_ACCEL: f32 = 1.0;
+const PLAYER_ACCEL: f32 = 15.0;
+const FRICTION: f32 = 0.83;
 
 #[derive(Copy, Clone)]
 pub struct Player {
@@ -23,42 +24,23 @@ impl Player {
     }
 
     pub fn update(&mut self, delta: f32) {
-        println!("{}", delta);
-        let direction = vec2(self.rot.cos(), self.rot.sin());
-        let target_vel = if is_key_down(KeyCode::W) { direction } else if is_key_down(KeyCode::S) { -direction } else { vec2(0.0, 0.0) };
-
-        // TODO: Set up if else chain of target velocities
-        // at end, do target_vel * 100
-
-        let mut target_vel = 0.;
-        if is_key_down(KeyCode::W) {
-            target_vel = self.vel.y * -PLAYER_ACCEL
+        self.vel.y = if is_key_down(KeyCode::W) {
+            self.vel.y - PLAYER_ACCEL * delta
         } else if is_key_down(KeyCode::S) {
-            target_vel = self.vel.y * PLAYER_ACCEL
+            self.vel.y + PLAYER_ACCEL * delta
+        } else {
+            self.vel.y * FRICTION
         };
 
-        if is_key_down(KeyCode::A) {
-            self.vel.x *= PLAYER_ACCEL;
+        self.vel.x = if is_key_down(KeyCode::A) {
+            self.vel.x - PLAYER_ACCEL * delta
         } else if is_key_down(KeyCode::D) {
-            self.vel.x *= PLAYER_ACCEL;
-        }
-        self.vel = self.vel.lerp(target_vel, delta);
+            self.vel.x + PLAYER_ACCEL * delta
+        } else {
+            self.vel.x * FRICTION
+        };
 
-        self.pos += self.vel * delta;
-        //
-        // let target_vel = if forward {
-        //     // direction * speed
-        // } else {
-        //     vec2(0.0, 0.0)
-        // }
-        //
-        // self.vel = self.vel.lerp(target_vel, frame_t as f32);
-        // // let rotation = self.rot.to_radians();
-        // // if self.vel.length() > 5. {
-        // //     self.vel = self.vel.normalize() * 5.;
-        // // }
-        // self.pos += self.vel;
-        // // self.vel = self.vel.lerp(vec2(0., 0.), frame_t as f32);
+        self.pos += self.vel;
     }
 
     pub fn render(self) {
