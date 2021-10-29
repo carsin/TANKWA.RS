@@ -3,7 +3,17 @@ use macroquad::prelude::*;
 mod player;
 mod game;
 
-#[macroquad::main("Asteroids --yabai")]
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "SHOOTER --yabai".to_owned(),
+        window_width: 1600,
+        window_height: 900,
+        fullscreen: false,
+        ..Default::default()
+    }
+}
+
+#[macroquad::main(window_conf)]
 async fn main() {
     let mut game = game::Game::new();
 

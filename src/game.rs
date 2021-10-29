@@ -8,6 +8,7 @@ pub struct Game {
 
 pub struct Bullet {
     pub pos: Vec2,
+    pub dir: Vec2,
     vel: Vec2,
     shot_at: f64,
     collided: bool,
@@ -22,35 +23,21 @@ impl Game {
     }
 
     pub fn update(&mut self) {
-        let mut last_shot = get_time();
-
-        // move player
-        if is_key_down(KeyCode::W) {
-            self.player.vel.y -= 0.5;
-        } else if is_key_down(KeyCode::S) {
-            self.player.vel.y += 0.5;
-        }
-
-        if is_key_down(KeyCode::A) {
-            self.player.vel.x -= 0.5;
-        } else if is_key_down(KeyCode::D) {
-            self.player.vel.x += 0.5;
-        }
-
+        let delta = get_frame_time();
         let frame_t = get_time();
-
         // shoot bullet on click
-        if is_mouse_button_down(MouseButton::Left) {
+        // TODO: get position always & move pos to player obj
+        if is_mouse_button_down(MouseButton::Left) && frame_t - self.player.last_shot > 0.1 {
             let mouse_pos = mouse_position();
             let direction = (vec2(mouse_pos.0, mouse_pos.1) - self.player.pos).normalize();
-            // let rot_vec = Vec2::new(rotation.sin(), -rotation.cos());
             self.bullets.push(Bullet {
+                dir: direction,
                 pos: ((self.player.pos) + direction),
                 vel: 7. * direction,
                 shot_at: frame_t,
                 collided: false,
             });
-            last_shot = frame_t;
+            self.player.last_shot = frame_t;
         }
 
         // update bullets
@@ -58,16 +45,20 @@ impl Game {
             bullet.pos += bullet.vel;
         }
 
-        self.player.update();
+        self.player.update(delta);
+
         self.bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t);
         self.bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t && !bullet.collided);
     }
 
     pub fn render(&self) {
-        clear_background(LIGHTGRAY);
+        clear_background(BLACK);
         // bullets
         for bullet in self.bullets.iter() {
-            draw_circle(bullet.pos.x, bullet.pos.y, 2., BLACK);
+            let pos1 = bullet.pos - bullet.vel;
+            let pos2 = bullet.pos - bullet.vel * 2.;
+            draw_line(pos1.x, pos1.y, pos2.x, pos2.y, 1., YELLOW);
+            draw_circle(bullet.pos.x, bullet.pos.y, 1., RED)
         }
         // player
         self.player.render();
