@@ -27,25 +27,24 @@ impl Player {
         let direction = vec2(self.rot.cos(), self.rot.sin());
         let target_vel = if is_key_down(KeyCode::W) { direction } else if is_key_down(KeyCode::S) { -direction } else { vec2(0.0, 0.0) };
 
-        self.vel = self.vel.lerp(target_vel, delta);
-
-        self.pos += self.vel * delta;
         // TODO: Set up if else chain of target velocities
         // at end, do target_vel * 100
 
-        // let target_vel;
-        // target_vel = if is_key_down(KeyCode::W) {
-        //     self.vel.y *= PLAYER_ACCEL
-        // }
-        // let target_vel = if is_key_down(KeyCode::S) {
-        //     self.vel.y += PLAYER_ACCEL;
-        // }
-        //
-        // if is_key_down(KeyCode::A) {
-        //     self.vel.x -= PLAYER_ACCEL;
-        // } else if is_key_down(KeyCode::D) {
-        //     self.vel.x += PLAYER_ACCEL;
-        // }
+        let mut target_vel = 0.;
+        if is_key_down(KeyCode::W) {
+            target_vel = self.vel.y * -PLAYER_ACCEL
+        } else if is_key_down(KeyCode::S) {
+            target_vel = self.vel.y * PLAYER_ACCEL
+        };
+
+        if is_key_down(KeyCode::A) {
+            self.vel.x *= PLAYER_ACCEL;
+        } else if is_key_down(KeyCode::D) {
+            self.vel.x *= PLAYER_ACCEL;
+        }
+        self.vel = self.vel.lerp(target_vel, delta);
+
+        self.pos += self.vel * delta;
         //
         // let target_vel = if forward {
         //     // direction * speed
