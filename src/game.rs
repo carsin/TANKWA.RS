@@ -63,5 +63,4 @@ impl Game {
         // player
         self.player.render();
     }
-
 }

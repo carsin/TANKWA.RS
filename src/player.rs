@@ -1,7 +1,8 @@
 use macroquad::prelude::*;
 
-const PLAYER_ACCEL: f32 = 15.0;
-const FRICTION: f32 = 0.83;
+const PLAYER_ACCEL: f32 = 23.0;
+const FRICTION: f32 = 0.77;
+const MAX_SPEED: f32 = 9.0;
 
 #[derive(Copy, Clone)]
 pub struct Player {
@@ -25,17 +26,17 @@ impl Player {
 
     pub fn update(&mut self, delta: f32) {
         self.vel.y = if is_key_down(KeyCode::W) {
-            self.vel.y - PLAYER_ACCEL * delta
+            (self.vel.y - PLAYER_ACCEL * delta).max(-MAX_SPEED)
         } else if is_key_down(KeyCode::S) {
-            self.vel.y + PLAYER_ACCEL * delta
+            (self.vel.y + PLAYER_ACCEL * delta).min(MAX_SPEED)
         } else {
             self.vel.y * FRICTION
         };
 
         self.vel.x = if is_key_down(KeyCode::A) {
-            self.vel.x - PLAYER_ACCEL * delta
+            (self.vel.x - PLAYER_ACCEL * delta).max(-MAX_SPEED)
         } else if is_key_down(KeyCode::D) {
-            self.vel.x + PLAYER_ACCEL * delta
+            (self.vel.x + PLAYER_ACCEL * delta).min(MAX_SPEED)
         } else {
             self.vel.x * FRICTION
         };
