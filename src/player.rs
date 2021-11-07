@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use crate::game::{Bullet, Aabb, BULLET_SPEED, BULLET_WIDTH};
+use crate::game::{Projectile, BULLET_SPEED, BULLET_WIDTH};
 
 const PLAYER_ACCEL: f32 = 27.0;
 const FRICTION: f32 = 0.77;
@@ -18,9 +18,9 @@ impl Player {
     pub fn new() -> Self {
         Player {
             pos: Vec2::new(screen_width() / 2., screen_height() / 2.),
+            size: Vec2::new(20., 20.),
             rot: 0.,
             vel: Vec2::new(0., 0.),
-            size: Vec2::new(20., 20.),
             last_shot: get_time(),
         }
     }
@@ -50,17 +50,16 @@ impl Player {
         draw_circle(self.pos.x, self.pos.y, 1.0, RED);
     }
 
-    pub fn shoot(self) -> Bullet {
+    pub fn shoot(self) -> Projectile {
         let mouse_pos = mouse_position();
         let direction = (vec2(mouse_pos.0, mouse_pos.1) - self.pos).normalize();
         let position = self.pos + direction * self.size.x * 1.5;
-        Bullet {
+        Projectile {
             pos: position,
             dir: direction,
             vel: BULLET_SPEED * direction,
             shot_at: get_time(),
             // collider is at tip of bullet, BULLET_WIDTH wide
-            collider: Aabb { pos1: position - direction.perp() * (BULLET_WIDTH / 2.), pos2: position + direction.perp() * (BULLET_WIDTH / 2.) },
             collided: false,
         }
     }
