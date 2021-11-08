@@ -3,7 +3,7 @@ use macroquad::prelude::*;
 use super::tank::Tank;
 use super::projectile::Projectile;
 
-pub const BULLET_WIDTH: f32 = 1.;
+pub const BULLET_WIDTH: f32 = 10.;
 pub const BULLET_SPEED: f32 = 20.;
 
 pub struct Game {
@@ -16,7 +16,7 @@ pub struct Game {
 impl Game {
     pub fn new(textures: Vec<Texture2D>) -> Self {
         Game {
-            player: Tank::new(vec2(45., 60.)),
+            player: Tank::new(vec2(40., 60.)),
             projectiles: Vec::new(),
             textures,
         }
@@ -59,7 +59,7 @@ impl Game {
         draw_texture_ex(self.textures[0], self.player.pos.x - self.player.size.x / 2., self.player.pos.y - self.player.size.y / 2., WHITE, DrawTextureParams {
             dest_size: Some(self.player.size),
             source: None,
-            // rotation: 0.,
+            // urotation: 0.,
             rotation: self.player.rot.to_radians(),
             flip_x: false,
             flip_y: false,

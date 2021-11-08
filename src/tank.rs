@@ -2,10 +2,10 @@ use macroquad::prelude::*;
 use super::projectile::Projectile;
 use super::game::BULLET_SPEED;
 
-const PLAYER_ACCEL: f32 = 15.0;
-const MAX_SPEED: f32 = 7.0;
+const PLAYER_ACCEL: f32 = 10.0;
+const MAX_SPEED: f32 = 5.0;
 const MAX_SPEED_VEC: Vec2 = const_vec2!([MAX_SPEED, MAX_SPEED]);
-const FRICTION: Vec2 = const_vec2!([0.3, 0.9]);
+const FRICTION: Vec2 = const_vec2!([0.9, 0.9]);
 
 #[derive(Copy, Clone)]
 pub struct Tank {
@@ -36,20 +36,20 @@ impl Tank {
         self.gun_dir = (vec2(mouse_pos.0, mouse_pos.1) - self.pos).normalize();
         // TODO: Abstract to player controller
         let rot_rads = self.rot.to_radians();
-        let rot_vec = vec2(rot_rads.sin(), -rot_rads.cos());
+        let dir_vec = vec2(rot_rads.sin(), -rot_rads.cos());
         self.vel = if is_key_down(KeyCode::W) {
-            (self.vel + rot_vec * PLAYER_ACCEL * delta).min(MAX_SPEED_VEC).max(-MAX_SPEED_VEC)
+            (self.vel + dir_vec * PLAYER_ACCEL * delta).min(MAX_SPEED_VEC).max(-MAX_SPEED_VEC)
         } else if is_key_down(KeyCode::S) {
-            (self.vel - rot_vec * PLAYER_ACCEL * delta).max(-MAX_SPEED_VEC).min(MAX_SPEED_VEC)
+            (self.vel - dir_vec * PLAYER_ACCEL * delta).max(-MAX_SPEED_VEC).min(MAX_SPEED_VEC)
         } else {
             // TODO: Fix friction values per side of tank
-            self.vel * FRICTION
+            self.vel * FRICTION * dir_vec
         };
 
         // Rotational movement control
-        self.rot = if is_key_down(KeyCode::Q) {
+        self.rot = if is_key_down(KeyCode::A) {
             self.rot - 3.
-        } else if is_key_down(KeyCode::E) {
+        } else if is_key_down(KeyCode::D) {
             self.rot + 3.
         } else {
             self.rot
