@@ -1,8 +1,10 @@
 use macroquad::prelude::*;
+
 use super::tank::Tank;
+use super::projectile::Projectile;
 
 pub const BULLET_WIDTH: f32 = 1.;
-pub const BULLET_SPEED: f32 = 10.;
+pub const BULLET_SPEED: f32 = 20.;
 
 pub struct Game {
     player: Tank,
@@ -11,19 +13,10 @@ pub struct Game {
     textures: Vec<Texture2D>,
 }
 
-pub struct Projectile {
-    pub pos: Vec2,
-    pub dir: Vec2,
-    pub vel: Vec2,
-    pub size: Vec2,
-    pub shot_at: f64,
-    pub collided: bool,
-}
-
 impl Game {
     pub fn new(textures: Vec<Texture2D>) -> Self {
         Game {
-            player: Tank::new(),
+            player: Tank::new(vec2(45., 60.)),
             projectiles: Vec::new(),
             textures,
         }
@@ -54,14 +47,15 @@ impl Game {
 
         // projectiles
         for proj in self.projectiles.iter() {
-            let pos1 = proj.pos - proj.vel;
-            let pos2 = proj.pos - proj.vel * 2.;
+            // bullets
+            // TODO: properly render shells using width & height
+            let pos1 = proj.pos;
+            let pos2 = proj.pos - proj.vel;
             draw_line(pos1.x, pos1.y, pos2.x, pos2.y, BULLET_WIDTH, YELLOW);
         }
 
-        // player
         // tank
-        // let rot_angle = self.player.dir.y.atan2(self.player.dir.x);
+        // TODO: move
         draw_texture_ex(self.textures[0], self.player.pos.x - self.player.size.x / 2., self.player.pos.y - self.player.size.y / 2., WHITE, DrawTextureParams {
             dest_size: Some(self.player.size),
             source: None,
@@ -73,12 +67,9 @@ impl Game {
         });
 
         // gun barrel
-        draw_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + self.player.gun_dir.x * self.player.gun_length, self.player.pos.y + self.player.gun_dir.y * self.player.gun_length, 10., GRAY);
+        draw_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + self.player.gun_dir.x * self.player.gun_length, self.player.pos.y + self.player.gun_dir.y * self.player.gun_length, self.player.size.y / 8., GRAY);
 
         // center turret
-        draw_circle(self.player.pos.x, self.player.pos.y, self.player.size.x / 2.5, GRAY);
-
-
-        // self.player.render();
+        draw_circle(self.player.pos.x, self.player.pos.y, self.player.size.y / 3.5, GRAY);
     }
 }

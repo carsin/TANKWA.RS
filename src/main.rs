@@ -2,6 +2,7 @@ use macroquad::prelude::*;
 
 mod tank;
 mod game;
+mod projectile;
 
 fn window_conf() -> Conf {
     Conf {
@@ -20,9 +21,7 @@ async fn main() {
     let mut game = game::Game::new(textures);
 
     loop {
-        if is_key_down(KeyCode::Escape) {
-            break;
-        }
+        if is_key_down(KeyCode::Escape) { break; }
         game.update();
         game.render();
         next_frame().await

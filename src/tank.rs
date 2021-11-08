@@ -1,9 +1,11 @@
 use macroquad::prelude::*;
-use crate::game::{Projectile, BULLET_SPEED};
+use super::projectile::Projectile;
+use super::game::BULLET_SPEED;
 
-const PLAYER_ACCEL: f32 = 27.0;
-const FRICTION: f32 = 0.77;
-const MAX_SPEED: f32 = 9.0;
+const PLAYER_ACCEL: f32 = 15.0;
+const MAX_SPEED: f32 = 7.0;
+const MAX_SPEED_VEC: Vec2 = const_vec2!([MAX_SPEED, MAX_SPEED]);
+const FRICTION: Vec2 = const_vec2!([0.3, 0.9]);
 
 #[derive(Copy, Clone)]
 pub struct Tank {
@@ -17,15 +19,15 @@ pub struct Tank {
 }
 
 impl Tank {
-    pub fn new() -> Self {
+    pub fn new(size: Vec2) -> Self {
         Tank {
-            pos: Vec2::new(screen_width() / 2., screen_height() / 2.),
-            size: Vec2::new(30., 45.),
-            vel: Vec2::new(0., 0.),
+            pos: vec2(screen_width() / 2., screen_height() / 2.),
+            size,
+            vel: vec2(0., 0.),
             last_shot: get_time(),
             rot: 0.,
-            gun_dir: Vec2::new(0., 0.),
-            gun_length: 30.,
+            gun_dir: vec2(0., 0.),
+            gun_length: size.y / 1.6,
         }
     }
 
@@ -33,30 +35,22 @@ impl Tank {
         let mouse_pos = mouse_position();
         self.gun_dir = (vec2(mouse_pos.0, mouse_pos.1) - self.pos).normalize();
         // TODO: Abstract to player controller
-        // TODO: compute velocity from rotation
-        // Vertical movement control
-        self.vel.y = if is_key_down(KeyCode::W) {
-            (self.vel.y - PLAYER_ACCEL * delta).max(-MAX_SPEED)
+        let rot_rads = self.rot.to_radians();
+        let rot_vec = vec2(rot_rads.sin(), -rot_rads.cos());
+        self.vel = if is_key_down(KeyCode::W) {
+            (self.vel + rot_vec * PLAYER_ACCEL * delta).min(MAX_SPEED_VEC).max(-MAX_SPEED_VEC)
         } else if is_key_down(KeyCode::S) {
-            (self.vel.y + PLAYER_ACCEL * delta).min(MAX_SPEED)
+            (self.vel - rot_vec * PLAYER_ACCEL * delta).max(-MAX_SPEED_VEC).min(MAX_SPEED_VEC)
         } else {
-            self.vel.y * FRICTION
-        };
-
-        // Horizontal movement control
-        self.vel.x = if is_key_down(KeyCode::A) {
-            (self.vel.x - PLAYER_ACCEL * delta).max(-MAX_SPEED)
-        } else if is_key_down(KeyCode::D) {
-            (self.vel.x + PLAYER_ACCEL * delta).min(MAX_SPEED)
-        } else {
-            self.vel.x * FRICTION
+            // TODO: Fix friction values per side of tank
+            self.vel * FRICTION
         };
 
         // Rotational movement control
         self.rot = if is_key_down(KeyCode::Q) {
-            self.rot - 5.
+            self.rot - 3.
         } else if is_key_down(KeyCode::E) {
-            self.rot + 5.
+            self.rot + 3.
         } else {
             self.rot
         };
@@ -64,22 +58,13 @@ impl Tank {
         self.pos += self.vel;
     }
 
-    pub fn render(self) {
-        // draw_rectangle(self.pos.x - self.size.x / 2., self.pos.y - self.size.y / 2., self.size.x, self.size.y, WHITE);
-        draw_poly(self.pos.x, self.pos.y, 4, self.size.x, 0.0, WHITE);
-        draw_line(self.pos.x, self.pos.y, self.pos.x + self.gun_dir.x * self.gun_length, self.pos.y + self.gun_dir.y * self.gun_length, 10., BLUE);
-        draw_circle(self.pos.x, self.pos.y, 1.0, RED);
-    }
-
     pub fn shoot(self) -> Projectile {
-        let position = self.pos + self.gun_dir * self.size.x * 1.5;
         Projectile {
-            pos: position + self.gun_dir * self.gun_length,
+            pos: self.pos + self.gun_length * self.gun_dir,
             dir: self.gun_dir,
-            size: Vec2::new(10., 20.,),
+            size: vec2(10., 20.,),
             vel: BULLET_SPEED * self.gun_dir,
             shot_at: get_time(),
-            // collider is at tip of bullet, BULLET_WIDTH wide
             collided: false,
         }
     }
