@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-mod player;
+mod tank;
 mod game;
 
 fn window_conf() -> Conf {
@@ -15,10 +15,12 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut game = game::Game::new();
+    let tank_texture: Texture2D = load_texture("assets/tonk.png").await.unwrap();
+    let textures = vec![tank_texture];
+    let mut game = game::Game::new(textures);
 
     loop {
-        if is_key_down(KeyCode::Q) {
+        if is_key_down(KeyCode::Escape) {
             break;
         }
         game.update();
