@@ -3,7 +3,7 @@ use macroquad::prelude::*;
 use super::tank::Tank;
 use super::projectile::Projectile;
 
-pub const BULLET_WIDTH: f32 = 10.;
+pub const BULLET_WIDTH: f32 = 3.;
 pub const BULLET_SPEED: f32 = 20.;
 
 pub struct Game {
