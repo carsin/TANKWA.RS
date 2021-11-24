@@ -9,7 +9,7 @@ pub const BULLET_SPEED: f32 = 20.;
 pub struct Game {
     player: Tank,
     pub projectiles: Vec<Projectile>,
-    // TODO: Change to map
+    // TODO: Change to map <K, V>
     textures: Vec<Texture2D>,
 }
 
@@ -27,15 +27,14 @@ impl Game {
         let frame_t = get_time();
 
         // shoot bullet on click
-        if is_mouse_button_down(MouseButton::Left) && frame_t - self.player.last_shot > 0.1 {
+        if is_mouse_button_down(MouseButton::Left) && frame_t - self.player.last_shot > 0.5 {
             self.player.last_shot = frame_t;
             self.projectiles.push(self.player.shoot());
         }
 
         // update bullets
         for proj in self.projectiles.iter_mut() {
-            // move pos and colliders
-            proj.pos += proj.vel;
+            proj.update();
         }
 
         self.player.update(delta);
@@ -44,7 +43,6 @@ impl Game {
 
     pub fn render(&self) {
         clear_background(BLACK);
-
         // projectiles
         for proj in self.projectiles.iter() {
             // bullets
@@ -55,7 +53,7 @@ impl Game {
         }
 
         // tank
-        // TODO: move
+        // TODO: move this
         draw_texture_ex(self.textures[0], self.player.pos.x - self.player.size.x / 2., self.player.pos.y - self.player.size.y / 2., WHITE, DrawTextureParams {
             dest_size: Some(self.player.size),
             source: None,
@@ -65,10 +63,8 @@ impl Game {
             flip_y: false,
             pivot: None,
         });
-
         // gun barrel
         draw_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + self.player.gun_dir.x * self.player.gun_length, self.player.pos.y + self.player.gun_dir.y * self.player.gun_length, self.player.size.y / 8., GRAY);
-
         // center turret
         draw_circle(self.player.pos.x, self.player.pos.y, self.player.size.y / 3.5, GRAY);
     }

@@ -8,3 +8,9 @@ pub struct Projectile {
     pub shot_at: f64,
     pub collided: bool,
 }
+
+impl Projectile {
+    pub fn update(&mut self) {
+        self.pos += self.vel; // move
+    }
+}
