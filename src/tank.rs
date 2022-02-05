@@ -5,7 +5,7 @@ use macroquad::prelude::*;
 const PLAYER_ACCEL: f32 = 10.0;
 const MAX_SPEED: f32 = 4.0;
 const MAX_SPEED_VEC: Vec2 = const_vec2!([MAX_SPEED, MAX_SPEED]);
-const FRICTION: Vec2 = const_vec2!([2., 1.]);
+const FRICTION: Vec2 = const_vec2!([3., 2.]);
 
 #[derive(Copy, Clone)]
 pub struct Tank {
@@ -62,7 +62,13 @@ impl Tank {
         self.pos += self.vel; // Make move
     }
 
-    pub fn shoot(self) -> Projectile {
+    pub fn shoot(&mut self) -> Projectile {
+        // do knockback
+        let kb = 0.5;
+        let rot_rads = self.rot.to_radians() + std::f32::consts::PI * 0.5;
+        let dir_vec = vec2(rot_rads.cos(), rot_rads.sin());
+        self.vel -= dir_vec.normalize() * kb;
+        
         Projectile {
             pos: self.pos + self.gun_length * self.gun_dir,
             dir: self.gun_dir,
@@ -73,7 +79,6 @@ impl Tank {
         }
     }
 }
-
 
 fn lerp(a: f32, b: f32, t: f32) -> f32 {
     a + (b - a) * t
